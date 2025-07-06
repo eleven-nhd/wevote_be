@@ -7,6 +7,7 @@ import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
+import { VotesModule } from './votes/votes.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CampaignsModule } from './campaigns/campaigns.module';
     RolesModule,
     AuthModule,
     CampaignsModule,
+    VotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

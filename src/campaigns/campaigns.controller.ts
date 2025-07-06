@@ -6,12 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CampaignsService } from './campaigns.service';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
+import { Query as ExpressQuery } from 'express-serve-static-core';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('campaigns')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(AuthGuard)
 export class CampaignsController {
   constructor(private readonly campaignsService: CampaignsService) {}
 
@@ -21,8 +28,8 @@ export class CampaignsController {
   }
 
   @Get()
-  findAll() {
-    return this.campaignsService.findAll();
+  findAll(@Query() query: ExpressQuery) {
+    return this.campaignsService.findAll(query);
   }
 
   @Get(':id')
