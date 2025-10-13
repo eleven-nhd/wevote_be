@@ -14,7 +14,7 @@ export class CreateUserDto {
   readonly createdDate: Date;
 
   @ApiProperty()
-  readonly lastestDate: Date;
+  readonly latestDate: Date;
 
   @ApiProperty()
   @IsString()

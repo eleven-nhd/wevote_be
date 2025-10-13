@@ -5,7 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({
+    origin: '*', // domain của Next.js
+    credentials: false,
+  });
   const config = new DocumentBuilder()
     .setTitle('We vote')
     .setDescription('WeVote API documentation')
@@ -26,6 +31,6 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 8080);
 }
 bootstrap().then();

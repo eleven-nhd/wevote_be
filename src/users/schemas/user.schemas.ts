@@ -18,9 +18,9 @@ export class User {
   createdDate: Date;
 
   @Prop()
-  lastestDate: Date;
+  latestDate: Date;
 
-  @Prop()
+  @Prop({ type: Types.ObjectId, ref: 'Role' })
   roleId: string;
 }
 

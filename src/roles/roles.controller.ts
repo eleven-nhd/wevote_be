@@ -10,33 +10,34 @@ import {
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { PageRequestDto } from '../core/dto/page-request.dto';
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @Post('/create-role')
+  @Post('/create')
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create(createRoleDto);
   }
 
-  @Get('/get-all-roles')
-  findAll() {
-    return this.rolesService.findAll();
+  @Post('/get-page')
+  findAll(@Body() request: PageRequestDto) {
+    return this.rolesService.findAll(request);
   }
 
   @Get('/get-by-id/:id')
   findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(+id);
+    return this.rolesService.findOne(id);
   }
 
-  @Patch('/update-role/:id')
+  @Patch('/update/:id')
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(+id, updateRoleDto);
+    return this.rolesService.update(id, updateRoleDto);
   }
 
   @Delete('/remove/:id')
   remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
+    return this.rolesService.remove(id);
   }
 }

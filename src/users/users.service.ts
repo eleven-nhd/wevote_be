@@ -8,7 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schemas';
 import mongoose, { Model } from 'mongoose';
-import { Query } from 'express-serve-static-core';
+import { PageRequestDto } from '../core/dto/page-request.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,24 +20,25 @@ export class UsersService {
     return await this.userModel.create(createUserDto);
   }
 
-  async findAll(query: Query): Promise<User[]> {
-    const resPerPage = 5;
-    const currentPage = Number(query.page) || 1;
+  async findAll(request: PageRequestDto): Promise<User[]> {
+    const resPerPage = request.size || 10;
+    const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
-    const keyword = query.keyword
+    const keyword = request.keyword
       ? {
           email: {
-            $regex: query.keyword,
+            $regex: request.keyword,
             $options: 'i',
           },
         }
       : {};
-    const result = await this.userModel
+
+    return this.userModel
       .find({ ...keyword })
       .limit(resPerPage)
-      .skip(skip);
-    return result;
+      .skip(skip)
+      .populate('roleId', 'name');
   }
 
   async findOne(id: number) {
@@ -68,7 +69,6 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    const result = await this.userModel.findByIdAndDelete({ _id: id }).exec();
-    return result;
+    return await this.userModel.findByIdAndDelete({ _id: id }).exec();
   }
 }
