@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
 import { VotesModule } from './votes/votes.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { VotesModule } from './votes/votes.module';
     AuthModule,
     CampaignsModule,
     VotesModule,
+    CoreModule
   ],
   controllers: [AppController],
   providers: [AppService],

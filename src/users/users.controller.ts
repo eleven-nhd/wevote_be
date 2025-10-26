@@ -39,7 +39,7 @@ export class UsersController {
   @Roles('sa')
   @Get('/get-by-id/:id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
   @Roles('sa')
   @Patch('/update/:id')

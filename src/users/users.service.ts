@@ -6,7 +6,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schemas';
+import { User } from './schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import { PageRequestDto } from '../core/dto/page-request.dto';
 
@@ -41,7 +41,7 @@ export class UsersService {
       .populate('roleId', 'name');
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const isValidId = mongoose.isValidObjectId(id);
 
     if (!isValidId) {
@@ -54,7 +54,7 @@ export class UsersService {
     return result;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string) {
     const result = await this.userModel.findOne({ email: email }).exec();
     if (!result) {
       throw new NotFoundException('Không tìm thấy người dùng');

@@ -9,6 +9,8 @@ import { Vote } from './schema/vote.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Query } from 'express-serve-static-core';
+import { PageRequestDto } from '../core/dto/page-request.dto';
+import { Role } from '../roles/schema/role.schema';
 
 @Injectable()
 export class VotesService {
@@ -20,24 +22,23 @@ export class VotesService {
     return await this.voteModel.create(createVoteDto);
   }
 
-  async findAll(query: Query): Promise<Vote[]> {
-    const resPerPage = 5;
-    const currentPage = Number(query.page) || 1;
+  findAll(request: PageRequestDto): Promise<Role[]> {
+    const resPerPage = request.size || 10;
+    const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
-    const keyword = query.keyword
+    const keyword = request.keyword
       ? {
-          name: {
-            $regex: query.keyword,
-            $options: 'i',
-          },
-        }
+        email: {
+          $regex: request.keyword,
+          $options: 'i',
+        },
+      }
       : {};
-    const result = await this.voteModel
+    return this.voteModel
       .find({ ...keyword })
       .limit(resPerPage)
       .skip(skip);
-    return result;
   }
 
   async findOne(id: string) {

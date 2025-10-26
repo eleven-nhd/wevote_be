@@ -15,6 +15,8 @@ import { UpdateVoteDto } from './dto/update-vote.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { PageRequestDto } from '../core/dto/page-request.dto';
+import { Roles } from '../auth/decorators/public.decorator';
 
 @Controller('votes')
 @ApiBearerAuth('JWT-auth')
@@ -22,27 +24,28 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 export class VotesController {
   constructor(private readonly votesService: VotesService) {}
 
-  @Post()
+  @Post('/create')
   create(@Body() createVoteDto: CreateVoteDto) {
     return this.votesService.create(createVoteDto);
   }
 
-  @Get()
-  findAll(@Query() query: ExpressQuery) {
-    return this.votesService.findAll(query);
+  // @Roles('admin')
+  @Post('/get-page')
+  findAll(@Body() request: PageRequestDto) {
+    return this.votesService.findAll(request);
   }
 
-  @Get(':id')
+  @Get('/get-by-id/:id')
   findOne(@Param('id') id: string) {
     return this.votesService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch('/update/:id')
   update(@Param('id') id: string, @Body() updateVoteDto: UpdateVoteDto) {
     return this.votesService.update(id, updateVoteDto);
   }
 
-  @Delete(':id')
+  @Delete('/remove/:id')
   remove(@Param('id') id: string) {
     return this.votesService.remove(id);
   }

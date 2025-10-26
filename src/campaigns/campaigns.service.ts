@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
-import { Query } from 'express-serve-static-core';
 import { Campaign } from './schema/campaign.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import { DataSelectDto } from '../core/dto/data-select.dto';
+import { PageRequestDto } from '../core/dto/page-request.dto';
 
 @Injectable()
 export class CampaignsService {
@@ -16,24 +21,35 @@ export class CampaignsService {
     return await this.campaignModel.create(createCampaignDto);
   }
 
-  async findAll(query: Query): Promise<Campaign[]> {
-    const resPerPage = 5;
-    const currentPage = Number(query.page) || 1;
+  findAll(request: PageRequestDto): Promise<Campaign[]> {
+    const resPerPage = request.size || 10;
+    const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
-    const keyword = query.keyword
+    const keyword = request.keyword
       ? {
-          email: {
-            $regex: query.keyword,
-            $options: 'i',
-          },
-        }
+        email: {
+          $regex: request.keyword,
+          $options: 'i',
+        },
+      }
       : {};
-    const result = await this.campaignModel
+    return this.campaignModel
       .find({ ...keyword })
       .limit(resPerPage)
       .skip(skip);
-    return result;
+  }
+
+  async getDataSelect(): Promise<DataSelectDto[]> {
+    const campaign = this.campaignModel.find().exec();
+    return campaign.then((res) => {
+      return res.map((campaign) => {
+        return {
+          label: campaign.name,
+          value: campaign.id,
+        };
+      });
+    });
   }
 
   async findOne(id: string) {
