@@ -5,25 +5,35 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Delete, Req,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { PageRequestDto } from '../core/dto/page-request.dto';
+import { CreateCampaignDto } from '../campaigns/dto/create-campaign.dto';
+import { CommonResultDto } from '../core/dto/common-result.dto';
+import { Campaign } from '../campaigns/schema/campaign.schema';
+import { Role } from './schema/role.schema';
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
+
   @Post('/create')
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
+  async create(@Body() createRoleDto: CreateRoleDto, @Req() req: any): Promise<CommonResultDto<Role>> {
+    try {
+      const data = await this.rolesService.create(createRoleDto, req);
+      return CommonResultDto.success(data, "Thêm mới vai trò thành công");
+    } catch (e) {
+      return CommonResultDto.error("Thao tác thất bại", e.message);
+    }
   }
 
   @Post('/get-page')
-  findAll(@Body() request: PageRequestDto) {
-    return this.rolesService.findAll(request);
+  findAll(@Body() request: PageRequestDto, @Req() req: any) {
+    return this.rolesService.findAll(request, req);
   }
 
   @Get('/get-by-id/:id')
@@ -32,12 +42,27 @@ export class RolesController {
   }
 
   @Patch('/update/:id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(id, updateRoleDto);
+  async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto, @Req() req: any) {
+    try {
+      const data = await this.rolesService.update(id, updateRoleDto, req);
+      return CommonResultDto.success(data, "Cập nhật vai trò thành công");
+    } catch (e) {
+      return CommonResultDto.error("Thao tác thất bại", e.message);
+    }
   }
 
   @Delete('/remove/:id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(id);
+  async remove(@Param('id') id: string, @Req() req: any) {
+    try {
+      const data = await this.rolesService.remove(id, req);
+      return CommonResultDto.success(data, "Xóa vai trò thành công");
+    } catch (e) {
+      return CommonResultDto.error("Thao tác thất bại", e.message);
+    }
+  }
+
+  @Get('/data-select')
+  getDataSelect(@Req() req: any) {
+    return this.rolesService.getDataSelect(req);
   }
 }

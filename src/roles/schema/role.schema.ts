@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
+import { AuditSchema } from '../../core/schema/audit.schema';
 
 @Schema()
-export class Role {
+export class Role extends AuditSchema {
   @Prop({ type: SchemaTypes.ObjectId })
   id: Types.ObjectId;
 

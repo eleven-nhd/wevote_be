@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
 import { AuthGuard } from './auth.guard';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +23,14 @@ export class AuthController {
   signIn(@Body() loginDto: LoginDto, @Req() req: Request) {
     return this.authService.signIn(loginDto, req);
   }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('register')
+  register(@Body() registerDto: RegisterDto, @Req() req: Request) {
+    return this.authService.register(registerDto, req);
+  }
+
   @UseGuards(AuthGuard)
   @Get('profile')
   getProfile(@Request() req) {

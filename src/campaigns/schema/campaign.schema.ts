@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
+import { AuditSchema } from '../../core/schema/audit.schema';
 
 @Schema()
-export class Campaign {
+export class Campaign extends AuditSchema {
   @Prop({ type: SchemaTypes.ObjectId })
   id: Types.ObjectId;
 
@@ -24,8 +25,6 @@ export class Campaign {
   @Prop()
   endTime: Date;
 
-  @Prop()
-  userId: string;
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

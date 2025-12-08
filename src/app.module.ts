@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
 import { VotesModule } from './votes/votes.module';
 import { CoreModule } from './core/core.module';
+import { TransactionsModule } from './transactions/transactions.module';
+import { UserContextMiddleware } from './core/middleware/user-context.middleware';
 
 @Module({
   imports: [
@@ -22,9 +24,16 @@ import { CoreModule } from './core/core.module';
     AuthModule,
     CampaignsModule,
     VotesModule,
-    CoreModule
+    CoreModule,
+    TransactionsModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UserContextMiddleware)
+      .forRoutes('*');
+  }
+}

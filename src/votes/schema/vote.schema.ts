@@ -14,7 +14,7 @@ export class Vote {
   description: string;
 
   @Prop()
-  featureImage: boolean;
+  featureImage: string;
 
   @Prop()
   options: OptionVoteDto[];
@@ -25,7 +25,7 @@ export class Vote {
   @Prop()
   tags: string[];
 
-  @Prop()
+  @Prop({ type: Types.ObjectId, ref: 'Campaign' })
   campaignId: string;
 
   @Prop()

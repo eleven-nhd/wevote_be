@@ -4,19 +4,16 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  readonly email: string;
+  email: string;
+
+  @ApiProperty()
+  description: string;
 
   @ApiProperty()
   @IsString()
-  readonly description: string;
-
-  @ApiProperty()
-  readonly createdDate: Date;
-
-  @ApiProperty()
-  readonly latestDate: Date;
+  roleId: string;
 
   @ApiProperty()
   @IsString()
-  readonly roleId: string;
+  password: string;
 }

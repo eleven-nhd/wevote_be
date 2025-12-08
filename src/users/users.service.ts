@@ -9,18 +9,22 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import { PageRequestDto } from '../core/dto/page-request.dto';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly userRepo: UsersRepository,
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.userModel.create(createUserDto);
+  async create(createUserDto: CreateUserDto, req: any): Promise<User> {
+    return this.userRepo.createOne(createUserDto, {
+      userId: req.userId || null
+    });
   }
 
-  async findAll(request: PageRequestDto): Promise<User[]> {
+  findAll(request: PageRequestDto, req: any): Promise<User[]> {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
@@ -34,11 +38,10 @@ export class UsersService {
         }
       : {};
 
-    return this.userModel
-      .find({ ...keyword })
-      .limit(resPerPage)
-      .skip(skip)
-      .populate('roleId', 'name');
+    return this.userRepo.findAll(keyword, resPerPage, skip, {
+      userId: req.userId || null
+    }).populate('roleId', 'name');
+
   }
 
   async findOne(id: string) {
@@ -55,20 +58,18 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    const result = await this.userModel.findOne({ email: email }).exec();
-    if (!result) {
-      throw new NotFoundException('Không tìm thấy người dùng');
-    }
-    return result;
+    return await this.userModel.findOne({ email: email }).exec();
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userModel
-      .findByIdAndUpdate({ _id: id }, updateUserDto, { new: true })
-      .exec();
+  async update(id: string, updateUserDto: UpdateUserDto, req: any) {
+    return this.userRepo.updateOne(id, updateUserDto, {
+      userId: req.userId || null
+    });
   }
 
-  async remove(id: number) {
-    return await this.userModel.findByIdAndDelete({ _id: id }).exec();
+  async remove(id: string, req: any) {
+    return this.userRepo.softDelete(id, {
+      userId: req.userId || null
+    });
   }
 }

@@ -18,7 +18,4 @@ export class CreateCampaignDto {
   readonly startTime: Date;
   @ApiProperty()
   readonly endTime: Date;
-  @ApiProperty()
-  @IsString()
-  readonly userId: string;
 }

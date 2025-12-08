@@ -29,7 +29,7 @@ export class VotesService {
 
     const keyword = request.keyword
       ? {
-        email: {
+        name: {
           $regex: request.keyword,
           $options: 'i',
         },
@@ -47,7 +47,7 @@ export class VotesService {
     if (!isValidId) {
       throw new BadRequestException('Id Vote bắt buộc nhập!');
     }
-    const result = await this.voteModel.findOne({ _id: id }).exec();
+      const result = await this.voteModel.findOne({ _id: id }).populate('campaignId', 'name');;
     if (!result) {
       throw new NotFoundException('Không tìm thấy Vote');
     }

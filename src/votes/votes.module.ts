@@ -10,5 +10,9 @@ import { Vote, VoteSchema } from './schema/vote.schema';
   ],
   controllers: [VotesController],
   providers: [VotesService],
+  exports: [
+    VotesService,
+    MongooseModule.forFeature([{ name: Vote.name, schema: VoteSchema }]),
+  ],
 })
 export class VotesModule {}

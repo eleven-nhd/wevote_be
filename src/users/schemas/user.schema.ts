@@ -1,8 +1,9 @@
 import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { AuditSchema } from '../../core/schema/audit.schema';
 
 @Schema()
-export class User {
+export class User extends AuditSchema {
   @Prop({ type: SchemaTypes.ObjectId })
   id: Types.ObjectId;
 
@@ -12,11 +13,8 @@ export class User {
   @Prop()
   description: string;
 
-  @Prop()
-  createdDate: Date;
-
-  @Prop()
-  latestDate: Date;
+  @Prop({ required: true })
+  password: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Role' })
   roleId: string;

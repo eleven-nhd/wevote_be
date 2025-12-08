@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
+  NotFoundException, Req, Request,
 } from '@nestjs/common';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
@@ -10,71 +10,83 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { DataSelectDto } from '../core/dto/data-select.dto';
 import { PageRequestDto } from '../core/dto/page-request.dto';
+import { Vote } from '../votes/schema/vote.schema';
+import { CampaignRepository } from './campaigns.repository';
 
 @Injectable()
 export class CampaignsService {
   constructor(
+    private readonly campaignRepo: CampaignRepository,
     @InjectModel(Campaign.name) private readonly campaignModel: Model<Campaign>,
+    @InjectModel(Vote.name) private readonly voteModel: Model<Vote>,
   ) {}
 
-  async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
-    return await this.campaignModel.create(createCampaignDto);
+  async create(createCampaignDto: CreateCampaignDto, req: any): Promise<Campaign> {
+    return this.campaignRepo.createOne(createCampaignDto, {
+      userId: req.userId || null
+    });
   }
 
-  findAll(request: PageRequestDto): Promise<Campaign[]> {
+  findAll(request: PageRequestDto, req: any): Promise<Campaign[]> {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
     const keyword = request.keyword
       ? {
-        email: {
-          $regex: request.keyword,
-          $options: 'i',
-        },
-      }
+          name: {
+            $regex: request.keyword,
+            $options: 'i',
+          },
+        }
       : {};
-    return this.campaignModel
-      .find({ ...keyword })
-      .limit(resPerPage)
-      .skip(skip);
+    return this.campaignRepo.findAll(keyword, resPerPage, skip, {
+      userId: req.userId || null
+    });
   }
 
-  async getDataSelect(): Promise<DataSelectDto[]> {
-    const campaign = this.campaignModel.find().exec();
+  async getDataSelect(req: any): Promise<DataSelectDto[]> {
+    const campaign = this.campaignModel.find({creatorId: req.userId || null}).exec();
     return campaign.then((res) => {
       return res.map((campaign) => {
         return {
           label: campaign.name,
-          value: campaign.id,
+          value: campaign._id,
         };
       });
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Campaign> {
     const isValidId = mongoose.isValidObjectId(id);
-
     if (!isValidId) {
       throw new BadRequestException('Id Campaign bắt buộc nhập!');
     }
-    const result = await this.campaignModel.findOne({ _id: id }).exec();
+    const result = await this.campaignModel.findOne({ _id: id });
     if (!result) {
       throw new NotFoundException('Không tìm thấy Campaign');
     }
     return result;
   }
 
-  update(id: string, updateCampaignDto: UpdateCampaignDto) {
-    return this.campaignModel
-      .findByIdAndUpdate({ _id: id }, updateCampaignDto, { new: true })
-      .exec();
+  async update(id: string, updateCampaignDto: UpdateCampaignDto, req: any){
+    return this.campaignRepo.updateOne(id, updateCampaignDto, {
+      userId: req.userId || null
+    });
   }
 
-  async remove(id: string) {
-    const result = await this.campaignModel
-      .findByIdAndDelete({ _id: id })
+  async remove(id: string, req: any) {
+    return this.campaignRepo.softDelete(id, {
+      userId: req.userId || null
+    });
+  }
+
+  async getListVoteByCampaignId(campaignId: string, req: any): Promise<Vote[]> {
+    return await this.voteModel
+      .find({
+        campaignId: campaignId,
+        creatorId: req.userId || null
+      })
       .exec();
-    return result;
   }
 }
