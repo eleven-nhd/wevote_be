@@ -26,10 +26,10 @@ export class RolesService {
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
-    const keyword = request.keyword
+    const keyword = request.filters?.keyword
       ? {
           name: {
-            $regex: request.keyword,
+            $regex: request.filters?.keyword,
             $options: 'i',
           },
         }

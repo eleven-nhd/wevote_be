@@ -3,8 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class PageRequestDto {
   @ApiProperty()
-  @IsString()
-  readonly keyword: string;
+  readonly filters: any;
   @ApiProperty()
   readonly page: number;
   @ApiProperty()

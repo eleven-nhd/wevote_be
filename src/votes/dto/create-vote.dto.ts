@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 import { OptionVoteDto } from './option-vote.dto';
+import { Types } from 'mongoose';
+import { Transform } from 'class-transformer';
 
 export class CreateVoteDto {
   @ApiProperty()
@@ -21,7 +23,9 @@ export class CreateVoteDto {
   @ApiProperty()
   readonly tags: string[];
   @ApiProperty()
-  readonly campaignId: string;
+  @IsNotEmpty()
+  @Transform(({ value }) => new Types.ObjectId(value))
+  readonly campaignId: Types.ObjectId;
   @ApiProperty()
   readonly createdDate: Date;
 }

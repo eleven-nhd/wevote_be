@@ -11,13 +11,13 @@ export class User extends AuditSchema {
   email: string;
 
   @Prop()
-  description: string;
+  description?: string;
 
   @Prop({ required: true })
   password: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Role' })
-  roleId: string;
+  roleId: Types.ObjectId;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

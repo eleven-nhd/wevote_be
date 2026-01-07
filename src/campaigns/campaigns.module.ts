@@ -15,5 +15,8 @@ import { CampaignRepository } from './campaigns.repository';
   ],
   controllers: [CampaignsController],
   providers: [CampaignsService, CampaignRepository],
+  exports: [
+    MongooseModule.forFeature([{ name: Campaign.name, schema: CampaignSchema }]),
+  ]
 })
 export class CampaignsModule {}

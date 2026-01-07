@@ -1,43 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { PageRequestDto } from '../core/dto/page-request.dto';
+import { Model, Types } from 'mongoose';
 import { Transaction } from './schema/transaction.schema';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { PageRequestTransactionDto } from './dto/page-request-transaction.dto';
+import { Campaign } from '../campaigns/schema/campaign.schema';
 
 @Injectable()
 export class TransactionsService {
   constructor(
-    @InjectModel(Transaction.name) private readonly transactionModel: Model<Transaction>,
+    @InjectModel(Transaction.name)
+    private readonly transactionModel: Model<Transaction>,
+    @InjectModel(Campaign.name)
+    private readonly campaignModel: Model<Campaign>
   ) {}
 
-  async create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
-    return await this.transactionModel.create(createTransactionDto);
+  async create(
+    createTransactionDto: CreateTransactionDto,
+  ) {
+    const checkTransaction = await this.transactionModel.findOne({
+      voterId: createTransactionDto.voterId,
+      voteId: createTransactionDto.voteId,
+    });
+    const checkCampaign = await this.campaignModel.findOne({
+      _id: createTransactionDto.campaignId
+    });
+    if (checkCampaign) {
+      if(checkCampaign.endTime < new Date())
+      {
+        throw new BadRequestException('Chiến dịch đã kết thúc');
+      }
+    }
+    if (!checkTransaction) {
+      return await this.transactionModel.create(createTransactionDto);
+    } else {
+      return this.transactionModel.findByIdAndUpdate({ _id: checkTransaction._id }, createTransactionDto, { new: true });
+    }
+
   }
 
-  findAll(request: PageRequestDto): Promise<Transaction[]> {
+  findAll(request: PageRequestTransactionDto): Promise<Transaction[]> {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
-    const keyword = request.keyword
-      ? {
-        name: {
-          $regex: request.keyword,
-          $options: 'i',
-        },
-      }
-      : {};
-    return this.transactionModel
-      .find({ ...keyword })
-      .limit(resPerPage)
-      .skip(skip);
-  }
+    const payload = request.filters?.campaignId ? {
+      'campaignId': new Types.ObjectId(request.filters?.campaignId),
+    } : {};
 
-  findOne(id: string) {
     return this.transactionModel
-      .findOne({ _id: id })
+      .find(payload)
       .populate({
         path: 'voteId',
         select: 'name description campaignId',
@@ -45,7 +58,20 @@ export class TransactionsService {
           path: 'campaignId',
           select: 'name',
         },
-      });
+      })
+      .limit(resPerPage)
+      .skip(skip);
+  }
+
+  findOne(id: string) {
+    return this.transactionModel.findOne({ _id: id }).populate({
+      path: 'voteId',
+      select: 'name description campaignId',
+      populate: {
+        path: 'campaignId',
+        select: 'name',
+      },
+    });
   }
 
   async update(id: string, updateUserDto: UpdateTransactionDto) {

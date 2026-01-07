@@ -7,7 +7,7 @@ import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { Campaign } from './schema/campaign.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { DataSelectDto } from '../core/dto/data-select.dto';
 import { PageRequestDto } from '../core/dto/page-request.dto';
 import { Vote } from '../votes/schema/vote.schema';
@@ -32,10 +32,10 @@ export class CampaignsService {
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
-    const keyword = request.keyword
+    const keyword = request.filters?.keyword
       ? {
           name: {
-            $regex: request.keyword,
+            $regex: request.filters?.keyword,
             $options: 'i',
           },
         }
@@ -84,9 +84,57 @@ export class CampaignsService {
   async getListVoteByCampaignId(campaignId: string, req: any): Promise<Vote[]> {
     return await this.voteModel
       .find({
-        campaignId: campaignId,
+        'campaignId': new Types.ObjectId(campaignId),
         creatorId: req.userId || null
       })
       .exec();
+  }
+
+  async getListVoteTransactionCount(campaignId: string) {
+    const pipeline: any[] = [
+      {
+        $match: campaignId
+          ? { campaignId: new Types.ObjectId(campaignId) }
+          : {},
+      },
+      {
+        $lookup: {
+          from: 'transactions',
+          let: { voteId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$voteId', '$$voteId'] },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalTransaction: { $sum: 1 },
+                totalChoose: { $sum: '$choose' },
+              },
+            },
+          ],
+          as: 'transactionStats',
+        },
+      },
+      {
+        $addFields: {
+          totalTransaction: {
+            $ifNull: [{ $arrayElemAt: ['$transactionStats.totalTransaction', 0] }, 0],
+          },
+          totalChoose: {
+            $ifNull: [{ $arrayElemAt: ['$transactionStats.totalChoose', 0] }, 0],
+          },
+        },
+      },
+      {
+        $project: {
+          transactionStats: 0,
+        },
+      },
+    ];
+
+    return this.voteModel.aggregate(pipeline);
   }
 }

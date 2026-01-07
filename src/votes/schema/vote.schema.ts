@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
 import { OptionVoteDto } from '../dto/option-vote.dto';
+import { AuditSchema } from '../../core/schema/audit.schema';
 
 @Schema()
-export class Vote {
-  @Prop({ type: SchemaTypes.ObjectId })
-  id: Types.ObjectId;
+export class Vote extends AuditSchema {
 
   @Prop({ required: true })
   name: string;
@@ -26,7 +25,7 @@ export class Vote {
   tags: string[];
 
   @Prop({ type: Types.ObjectId, ref: 'Campaign' })
-  campaignId: string;
+  campaignId: Types.ObjectId;
 
   @Prop()
   createdDate: Date;

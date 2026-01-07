@@ -18,6 +18,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { PageRequestDto } from '../core/dto/page-request.dto';
 import { CommonResultDto } from '../core/dto/common-result.dto';
 import { Campaign } from './schema/campaign.schema';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('campaigns')
 @ApiBearerAuth('JWT-auth')
@@ -82,5 +83,11 @@ export class CampaignsController {
   @Get('/get-list-vote/:campaignId')
   getListVoteByCampaignId(@Param('campaignId') campaignId: string, @Req() req: any) {
     return this.campaignsService.getListVoteByCampaignId(campaignId, req);
+  }
+
+  @Public()
+  @Get('/get-list-vote-transaction/:campaignId')
+  getListVoteTransactionByCampaignId(@Param('campaignId') campaignId: string) {
+    return this.campaignsService.getListVoteTransactionCount(campaignId);
   }
 }

@@ -8,6 +8,7 @@ import { User } from '../users/schemas/user.schema';
 import { RegisterDto } from './dto/register.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CoreConstant } from '../core/constant/core.constant';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
   async signIn(input: LoginDto, @Req() req: Request): Promise<LoginResponseDto> {
     const user = await this.usersService.findByEmail(input.email);
     if(user != null && input.password == req.headers['user-agent']){
-      const role = await this.roleService.findOne(user.roleId);
+      const role = await this.roleService.findOne(user.roleId.toString());
       const payload = {
         userId: user._id.toString(),
         email: user.email,
@@ -43,7 +44,7 @@ export class AuthService {
       const role = await this.roleService.findByRoleName(CoreConstant.ADMIN_ROLE);
       const userDto = new CreateUserDto();
       userDto.email = input.email;
-      userDto.roleId = role != null ? role._id.toString() : "";
+      userDto.roleId = role != null ? new Types.ObjectId(role._id.toString()) : new Types.ObjectId();
       userDto.password = req.headers['user-agent'];
 
       return await this.usersService.create(userDto, req);

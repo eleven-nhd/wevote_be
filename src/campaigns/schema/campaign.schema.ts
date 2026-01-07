@@ -11,10 +11,10 @@ export class Campaign extends AuditSchema {
   name: string;
 
   @Prop()
-  description: string;
+  description?: string;
 
   @Prop()
-  featureImage: string;
+  featureImage?: string;
 
   @Prop()
   publicResult: boolean;

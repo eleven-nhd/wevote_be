@@ -3,7 +3,7 @@ import { SchemaTypes, Types } from 'mongoose';
 
 @Schema()
 export class Transaction {
-  @Prop({ type: SchemaTypes.ObjectId })
+  @Prop({ type: SchemaTypes.ObjectId, auto: true })
   _id: Types.ObjectId;
 
   @Prop({ required: true })
@@ -12,8 +12,14 @@ export class Transaction {
   @Prop()
   choose: number;
 
-  @Prop({ type: Types.ObjectId, ref: 'Vote' })
-  voteId: string;
+  @Prop({ type: Types.ObjectId, ref: 'Vote', required: true })
+  voteId: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Campaign', required: true  })
+  campaignId: Types.ObjectId;
+
+  @Prop({ type: Date, default: null })
+  creationTime?: Date;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);

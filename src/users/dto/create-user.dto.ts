@@ -1,5 +1,7 @@
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { Types } from 'mongoose';
 export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -7,11 +9,12 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty()
-  description: string;
+  description?: string;
 
   @ApiProperty()
-  @IsString()
-  roleId: string;
+  @IsNotEmpty()
+  @Transform(({ value }) => new Types.ObjectId(value))
+  roleId: Types.ObjectId;
 
   @ApiProperty()
   @IsString()

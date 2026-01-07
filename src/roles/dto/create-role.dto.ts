@@ -6,6 +6,5 @@ export class CreateRoleDto {
   @IsString()
   readonly name: string;
   @ApiProperty()
-  @IsString()
-  readonly description: string;
+  readonly description?: string;
 }

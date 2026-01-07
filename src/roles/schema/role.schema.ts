@@ -11,7 +11,7 @@ export class Role extends AuditSchema {
   name: string;
 
   @Prop()
-  description: string;
+  description?: string;
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);

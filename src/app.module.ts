@@ -18,7 +18,9 @@ import { UserContextMiddleware } from './core/middleware/user-context.middleware
       envFilePath: '.env',
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.DB_URI ?? ''),
+    MongooseModule.forRoot(process.env.DB_URI ?? '', {
+      dbName: "wevote"
+    }),
     UsersModule,
     RolesModule,
     AuthModule,

@@ -3,15 +3,12 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCampaignDto {
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
   readonly name: string;
   @ApiProperty()
-  @IsString()
-  readonly description: string;
+  readonly description?: string;
   @ApiProperty()
-  @IsString()
-  readonly featureImage: string;
+  readonly featureImage?: string;
   @ApiProperty()
   readonly publicResult: boolean;
   @ApiProperty()
