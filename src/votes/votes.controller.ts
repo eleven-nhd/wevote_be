@@ -16,7 +16,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { PageRequestDto } from '../core/dto/page-request.dto';
-import { Roles } from '../auth/decorators/public.decorator';
+import { Public, Roles } from '../auth/decorators/public.decorator';
 import { CommonResultDto } from '../core/dto/common-result.dto';
 
 @Controller('votes')
@@ -42,6 +42,7 @@ export class VotesController {
   }
 
   @Get('/get-by-id/:id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.votesService.findOne(id);
   }
