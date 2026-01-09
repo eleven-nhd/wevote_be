@@ -10,10 +10,10 @@ export class Campaign extends AuditSchema {
   @Prop({ required: true })
   name: string;
 
-  @Prop({default: null})
+  @Prop()
   description?: string | null;
 
-  @Prop({default: null})
+  @Prop()
   featureImage?: string | null;
 
   @Prop({ default: false })
