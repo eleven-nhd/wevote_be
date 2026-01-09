@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { OptionVoteDto } from './option-vote.dto';
 import { Types } from 'mongoose';
 import { Transform } from 'class-transformer';
@@ -9,12 +9,14 @@ export class CreateVoteDto {
   @IsString()
   @IsNotEmpty()
   readonly name: string;
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  readonly description: string;
-  @ApiProperty()
+  readonly description?: string | null;
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  readonly featureImage: string;
+  readonly featureImage?: string | null;
   @ApiProperty()
   @IsNotEmpty()
   readonly options: OptionVoteDto[];

@@ -1,14 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCampaignDto {
   @ApiProperty()
   @IsNotEmpty()
   readonly name: string;
-  @ApiProperty()
-  readonly description?: string;
-  @ApiProperty()
-  readonly featureImage?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  readonly description?: string | null;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  readonly featureImage?: string | null;
   @ApiProperty()
   readonly publicResult: boolean;
   @ApiProperty()
