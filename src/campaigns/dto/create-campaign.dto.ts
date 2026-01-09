@@ -8,11 +8,11 @@ export class CreateCampaignDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  readonly description?: string | null;
+  readonly description?: string = "";
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  readonly featureImage?: string | null;
+  readonly featureImage?: string = "";
   @ApiProperty()
   readonly publicResult: boolean;
   @ApiProperty()

@@ -9,11 +9,11 @@ export class Vote extends AuditSchema {
   @Prop({ required: true })
   name: string;
 
-  @Prop()
-  description?: string | null;
+  @Prop({default: ""})
+  description?: string;
 
-  @Prop()
-  featureImage?: string | null;
+  @Prop({default: ""})
+  featureImage?: string;
 
   @Prop()
   options: OptionVoteDto[];

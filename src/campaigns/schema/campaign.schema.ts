@@ -10,11 +10,11 @@ export class Campaign extends AuditSchema {
   @Prop({ required: true })
   name: string;
 
-  @Prop()
-  description?: string | null;
+  @Prop({ default: "" })
+  description: string;
 
-  @Prop()
-  featureImage?: string | null;
+  @Prop({ default: "" })
+  featureImage: string;
 
   @Prop({ default: false })
   publicResult: boolean;
@@ -24,7 +24,6 @@ export class Campaign extends AuditSchema {
 
   @Prop()
   endTime: Date;
-
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

@@ -12,11 +12,11 @@ export class CreateVoteDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  readonly description?: string | null;
+  readonly description?: string = "";
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  readonly featureImage?: string | null;
+  readonly featureImage?: string = "";
   @ApiProperty()
   @IsNotEmpty()
   readonly options: OptionVoteDto[];
