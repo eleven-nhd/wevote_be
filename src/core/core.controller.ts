@@ -24,7 +24,7 @@ export class CoreController {
         }
         callback(null, true);
       },
-      limits: { fileSize: 2 * 1024 * 1024 }, // giới hạn 2MB
+      limits: { fileSize: 5 * 1024 * 1024 }, // giới hạn 5MB
     }),
   )
   @ApiConsumes('multipart/form-data')
