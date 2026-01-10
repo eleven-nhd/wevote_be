@@ -18,6 +18,9 @@ export class User extends AuditSchema {
 
   @Prop({ type: Types.ObjectId, ref: 'Role' })
   roleId: Types.ObjectId;
+
+  @Prop()
+  refreshToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

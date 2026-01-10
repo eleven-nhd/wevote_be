@@ -67,6 +67,13 @@ export class UsersService {
     });
   }
 
+  async updateRefreshToken(userId: string, refreshToken: string) {
+    return this.userModel.updateOne(
+      { _id: userId },
+      { refreshToken },
+    );
+  }
+
   async remove(id: string, req: any) {
     return this.userRepo.softDelete(id, {
       userId: req.userId || null

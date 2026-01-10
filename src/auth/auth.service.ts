@@ -9,6 +9,8 @@ import { RegisterDto } from './dto/register.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CoreConstant } from '../core/constant/core.constant';
 import { Types } from 'mongoose';
+import { ACCESS_TOKEN_EXPIRES, REFRESH_TOKEN_EXPIRES } from './constants';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -29,13 +31,57 @@ export class AuthService {
         roleId: user.roleId,
         role: role?.name,
       };
-      this.logger.log(payload);
+      const accessToken = await this.jwtService.signAsync(payload, {
+        expiresIn: ACCESS_TOKEN_EXPIRES,
+      });
+      const refreshToken = await this.jwtService.signAsync(
+        { userId: user._id.toString() },
+        { expiresIn: REFRESH_TOKEN_EXPIRES },
+      );
+      const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+      await this.usersService.updateRefreshToken(
+        user._id.toString(),
+        hashedRefreshToken,
+      );
+
       return {
-        access_token: await this.jwtService.signAsync(payload),
+        access_token: accessToken,
+        refresh_token: refreshToken,
       };
     }
     throw new UnauthorizedException();
   }
+
+  async refreshToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      const user = await this.usersService.findOne(payload.userId);
+      if (!user || !user.refreshToken) {
+        throw new UnauthorizedException();
+      }
+      const isMatch = await bcrypt.compare(token, user.refreshToken);
+      if (!isMatch) {
+        throw new UnauthorizedException();
+      }
+      const role = await this.roleService.findOne(user.roleId.toString());
+      const newPayload = {
+        userId: user._id.toString(),
+        email: user.email,
+        roleId: user.roleId,
+        role: role?.name,
+      };
+
+      return {
+        access_token: await this.jwtService.signAsync(newPayload, {
+          expiresIn: ACCESS_TOKEN_EXPIRES,
+        }),
+      };
+    } catch {
+      throw new UnauthorizedException();
+    }
+  }
+
 
   async register(input: RegisterDto, @Req() req: Request): Promise<User> {
     const checkUser = await this.usersService.findByEmail(input.email);
