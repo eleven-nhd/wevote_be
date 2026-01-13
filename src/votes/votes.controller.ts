@@ -57,6 +57,11 @@ export class VotesController {
     }
   }
 
+  @Get('/data-select')
+  getDataSelect(@Req() req: any) {
+    return this.votesService.getDataSelect(req);
+  }
+
   @Delete('/remove/:id')
   async remove(@Param('id') id: string, @Req() req: any) {
     try {

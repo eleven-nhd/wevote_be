@@ -49,7 +49,7 @@ export class DashboardService {
       },
       {
         $match: {
-          'campaign.creatorId': new Types.ObjectId(req.userId),
+          'campaign.creatorId': req.userId,
         },
       },
       {

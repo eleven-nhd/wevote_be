@@ -11,6 +11,7 @@ import { VotesModule } from './votes/votes.module';
 import { CoreModule } from './core/core.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UserContextMiddleware } from './core/middleware/user-context.middleware';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { UserContextMiddleware } from './core/middleware/user-context.middleware
     CampaignsModule,
     VotesModule,
     CoreModule,
-    TransactionsModule
+    TransactionsModule,
+    DashboardModule
   ],
   controllers: [AppController],
   providers: [AppService],

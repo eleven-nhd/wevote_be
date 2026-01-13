@@ -20,5 +20,9 @@ export class CreateTransactionDto {
   @Transform(({ value }) => new Types.ObjectId(value))
   campaignId: Types.ObjectId;
   @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }) => new Types.ObjectId(value))
+  creatorCampaignId: Types.ObjectId;
+  @ApiProperty()
   creationTime?: Date;
 }

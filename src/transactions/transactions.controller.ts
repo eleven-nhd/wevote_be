@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { PageRequestTransactionDto } from './dto/page-request-transaction.dto';
+import { PageRequestDto } from '../core/dto/page-request.dto';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -16,8 +16,8 @@ export class TransactionsController {
   }
 
   @Post('/get-page')
-  findAll(@Body() request: PageRequestTransactionDto) {
-    return this.transactionsService.findAll(request);
+  findAll(@Body() request: PageRequestDto, @Req() req: any) {
+    return this.transactionsService.findAll(request, req);
   }
 
   @Get('/get-by-id/:id')

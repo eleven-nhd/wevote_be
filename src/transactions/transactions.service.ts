@@ -4,8 +4,8 @@ import { Model, Types } from 'mongoose';
 import { Transaction } from './schema/transaction.schema';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { PageRequestTransactionDto } from './dto/page-request-transaction.dto';
 import { Campaign } from '../campaigns/schema/campaign.schema';
+import { PageRequestDto } from 'src/core/dto/page-request.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -40,14 +40,17 @@ export class TransactionsService {
 
   }
 
-  findAll(request: PageRequestTransactionDto): Promise<Transaction[]> {
+  findAll(request: PageRequestDto, req: any): Promise<Transaction[]> {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
-    const payload = request.filters?.campaignId ? {
-      'campaignId': new Types.ObjectId(request.filters?.campaignId),
-    } : {};
+    const payload = request.filters?.voteId ? {
+      'voteId': new Types.ObjectId(request.filters?.voteId),
+      'creatorCampaignId': new Types.ObjectId(req?.userId)
+    } : {
+      'creatorCampaignId': new Types.ObjectId(req?.userId)
+    };
 
     return this.transactionModel
       .find(payload)

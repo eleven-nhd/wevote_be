@@ -8,11 +8,9 @@ import { UpdateVoteDto } from './dto/update-vote.dto';
 import { Vote } from './schema/vote.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
-import { Query } from 'express-serve-static-core';
 import { PageRequestDto } from '../core/dto/page-request.dto';
-import { Role } from '../roles/schema/role.schema';
-import { UsersRepository } from '../users/users.repository';
 import { VotesRepository } from './votes.repository';
+import { DataSelectDto } from '../core/dto/data-select.dto';
 
 @Injectable()
 export class VotesService {
@@ -71,6 +69,18 @@ export class VotesService {
   async remove(id: string, req: any) {
     return this.voteRepo.softDelete(id, {
       userId: req.userId || null
+    });
+  }
+
+  async getDataSelect(req: any): Promise<DataSelectDto[]> {
+    const vote = this.voteModel.find({creatorId: req.userId || null}).exec();
+    return vote.then((res) => {
+      return res.map((vote) => {
+        return {
+          label: vote.name,
+          value: vote._id,
+        };
+      });
     });
   }
 }

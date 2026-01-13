@@ -38,9 +38,7 @@ export class UsersService {
         }
       : {};
 
-    return this.userRepo.findAll(keyword, resPerPage, skip, {
-      userId: req.userId || null
-    }).populate('roleId', 'name');
+    return this.userRepo.findAll(keyword, resPerPage, skip, {}).populate('roleId', 'name');
 
   }
 
