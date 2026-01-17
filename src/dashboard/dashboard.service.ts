@@ -233,7 +233,7 @@ export class DashboardService {
       ...(req && req.userId
         ? [{ $match: { $or: [{ 'vote.creator': req.userId }, { 'vote.creatorId': req.userId }] } }]
         : []),
-      { $sort: { totalTransactions: -1 } },
+      { $sort: { totalChoose: -1 } },
       { $limit: 1 },
       {
         $project: {
