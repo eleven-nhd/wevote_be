@@ -12,6 +12,7 @@ import { CoreModule } from './core/core.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UserContextMiddleware } from './core/middleware/user-context.middleware';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     VotesModule,
     CoreModule,
     TransactionsModule,
-    DashboardModule
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

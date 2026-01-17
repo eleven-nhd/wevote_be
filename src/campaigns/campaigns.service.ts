@@ -12,6 +12,7 @@ import { DataSelectDto } from '../core/dto/data-select.dto';
 import { PageRequestDto } from '../core/dto/page-request.dto';
 import { Vote } from '../votes/schema/vote.schema';
 import { CampaignRepository } from './campaigns.repository';
+import { Transaction } from '../transactions/schema/transaction.schema';
 
 @Injectable()
 export class CampaignsService {
@@ -19,6 +20,7 @@ export class CampaignsService {
     private readonly campaignRepo: CampaignRepository,
     @InjectModel(Campaign.name) private readonly campaignModel: Model<Campaign>,
     @InjectModel(Vote.name) private readonly voteModel: Model<Vote>,
+    @InjectModel(Transaction.name) private readonly transactionModel: Model<Transaction>,
   ) {}
 
   async create(createCampaignDto: CreateCampaignDto, req: any): Promise<Campaign> {
@@ -76,6 +78,10 @@ export class CampaignsService {
   }
 
   async remove(id: string, req: any) {
+    const checkTransactions = await this.transactionModel.findOne({campaignId: new Types.ObjectId(id)}).exec();
+    if (checkTransactions) {
+      throw new BadRequestException('Chiến dịch đã có lượt vote, không thể xóa!');
+    }
     return this.campaignRepo.softDelete(id, {
       userId: req.userId || null
     });

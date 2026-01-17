@@ -39,6 +39,7 @@ export class AuthGuard implements CanActivate {
         secret: jwtConstants.secret,
       });
       request['user'] = payload;
+      this.logger.log(payload)
 
       const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
           context.getHandler(),

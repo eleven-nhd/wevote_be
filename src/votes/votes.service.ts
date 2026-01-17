@@ -41,8 +41,13 @@ export class VotesService {
     const campaignId = request.filters?.campaignId ? {
       'campaignId': new Types.ObjectId(request.filters?.campaignId),
     } : {};
+    const listTag = request.filters?.tags && request.filters?.tags.length
+      ? {
+        tags:  request.filters?.tags,
+      }
+      : {};
 
-    return this.voteRepo.findAll({...keyword, ...campaignId}, resPerPage, skip, {
+    return this.voteRepo.findAll({...keyword, ...campaignId, ...listTag}, resPerPage, skip, {
       userId: req.userId || null
     }).populate('campaignId', 'name');
   }

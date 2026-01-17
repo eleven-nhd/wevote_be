@@ -6,6 +6,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Campaign } from '../campaigns/schema/campaign.schema';
 import { PageRequestDto } from 'src/core/dto/page-request.dto';
+import { RealtimeGateway } from '../core/gateway/realtime.gateway';
 
 @Injectable()
 export class TransactionsService {
@@ -13,7 +14,8 @@ export class TransactionsService {
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<Transaction>,
     @InjectModel(Campaign.name)
-    private readonly campaignModel: Model<Campaign>
+    private readonly campaignModel: Model<Campaign>,
+    private realtimeGateway: RealtimeGateway,
   ) {}
 
   async create(
@@ -33,9 +35,19 @@ export class TransactionsService {
       }
     }
     if (!checkTransaction) {
-      return await this.transactionModel.create(createTransactionDto);
+      const result = await this.transactionModel.create(createTransactionDto)
+      this.realtimeGateway.emitTableUpdate({
+        type: 'CREATE',
+        payload: result,
+      });
+      return result;
     } else {
-      return this.transactionModel.findByIdAndUpdate({ _id: checkTransaction._id }, createTransactionDto, { new: true });
+      const result = await this.transactionModel.findByIdAndUpdate({ _id: checkTransaction._id }, createTransactionDto, { new: true });
+      this.realtimeGateway.emitTableUpdate({
+        type: 'UPDATE',
+        payload: result,
+      });
+      return result;
     }
 
   }
