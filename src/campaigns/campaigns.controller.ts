@@ -81,6 +81,7 @@ export class CampaignsController {
   }
 
   @Get('/get-list-vote/:campaignId')
+  @Public()
   getListVoteByCampaignId(@Param('campaignId') campaignId: string, @Req() req: any) {
     return this.campaignsService.getListVoteByCampaignId(campaignId, req);
   }
