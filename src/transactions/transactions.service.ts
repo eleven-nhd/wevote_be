@@ -42,7 +42,8 @@ export class TransactionsService {
       });
       return result;
     } else {
-      const result = await this.transactionModel.findByIdAndUpdate({ _id: checkTransaction._id }, createTransactionDto, { new: true });
+      const result = await this.transactionModel.findByIdAndUpdate(
+        { _id: checkTransaction._id }, createTransactionDto, { new: true });
       this.realtimeGateway.emitTableUpdate({
         type: 'UPDATE',
         payload: result,
@@ -86,6 +87,13 @@ export class TransactionsService {
         path: 'campaignId',
         select: 'name',
       },
+    });
+  }
+
+  findByVoterAndVote(voterId: string, voteId: string) {
+    return this.transactionModel.findOne({
+      voterId: voterId,
+      voteId: new Types.ObjectId(voteId)
     });
   }
 

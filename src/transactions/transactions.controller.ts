@@ -34,4 +34,10 @@ export class TransactionsController {
   remove(@Param('id') id: string) {
     return this.transactionsService.remove(id);
   }
+
+  @Get('/get-by-voter-and-vote/:voteId/:voterId')
+  @Public()
+  findByVoterAndVote(@Param('voterId') voterId: string, @Param('voteId') voteId: string) {
+    return this.transactionsService.findByVoterAndVote(voterId, voteId);
+  }
 }
