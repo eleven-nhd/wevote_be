@@ -53,7 +53,7 @@ export class TransactionsService {
 
   }
 
-  findAll(request: PageRequestDto, req: any): Promise<Transaction[]> {
+  async findAll(request: PageRequestDto, req: any) {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
@@ -65,18 +65,27 @@ export class TransactionsService {
       'creatorCampaignId': new Types.ObjectId(req?.userId)
     };
 
-    return this.transactionModel
-      .find(payload)
-      .populate({
-        path: 'voteId',
-        select: 'name description campaignId',
-        populate: {
-          path: 'campaignId',
-          select: 'name',
-        },
-      })
-      .limit(resPerPage)
-      .skip(skip);
+    const queryFilter: any = {
+      ...payload
+    };
+
+    const [items, total] = await Promise.all([
+      this.transactionModel
+        .find(queryFilter)
+        .populate({
+          path: 'voteId',
+          select: 'name description campaignId',
+          populate: {
+            path: 'campaignId',
+            select: 'name',
+          },
+        })
+        .limit(resPerPage)
+        .skip(skip),
+      this.transactionModel.countDocuments(queryFilter),
+    ]);
+
+    return { items, total };
   }
 
   findOne(id: string) {

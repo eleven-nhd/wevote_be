@@ -29,7 +29,7 @@ export class CampaignsService {
     });
   }
 
-  findAll(request: PageRequestDto, req: any): Promise<Campaign[]> {
+  findAll(request: PageRequestDto, req: any) {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);

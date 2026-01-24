@@ -25,7 +25,7 @@ export class VotesService {
     });
   }
 
-  findAll(request: PageRequestDto, req: any): Promise<Vote[]> {
+  findAll(request: PageRequestDto, req: any){
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
@@ -48,8 +48,9 @@ export class VotesService {
       : {};
 
     return this.voteRepo.findAll({...keyword, ...campaignId, ...listTag}, resPerPage, skip, {
-      userId: req.userId || null
-    }).populate('campaignId', 'name');
+      userId: req.userId || null,
+      populate: ['campaignId', 'name']
+    });
   }
 
   async findOne(id: string) {

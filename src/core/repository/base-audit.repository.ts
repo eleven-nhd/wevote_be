@@ -50,8 +50,9 @@ export class BaseAuditRepository<T extends AuditSchema> {
     );
   }
 
-  findAll(filter: any = {}, resPerPage: number = 10, skip: number = 0, options?: { userId?: string }) {
+  async findAll(filter: any = {}, resPerPage: number = 10, skip: number = 0, options?: { userId?: string; populate?: string | string[] }) {
     const userId = this.getUserId(options);
+    const populate = options?.populate;
     const queryFilter: any = {
       ...filter,
       isDeleted: false,
@@ -59,9 +60,21 @@ export class BaseAuditRepository<T extends AuditSchema> {
     if (userId) {
       queryFilter.creatorId = userId;
     }
-    return this.model
+
+    let query = this.model
       .find(queryFilter)
       .limit(resPerPage)
       .skip(skip);
+
+    if (populate) {
+      query = query.populate(populate);
+    }
+
+    const [items, total] = await Promise.all([
+      query,
+      this.model.countDocuments(queryFilter),
+    ]);
+
+    return { items, total };
   }
 }

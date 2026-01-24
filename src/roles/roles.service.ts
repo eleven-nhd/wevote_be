@@ -21,7 +21,7 @@ export class RolesService {
     });
   }
 
-  findAll(request: PageRequestDto, req: any): Promise<Role[]> {
+  findAll(request: PageRequestDto, req: any) {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);

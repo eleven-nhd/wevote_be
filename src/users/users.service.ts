@@ -24,7 +24,7 @@ export class UsersService {
     });
   }
 
-  findAll(request: PageRequestDto, req: any): Promise<User[]> {
+  findAll(request: PageRequestDto, req: any) {
     const resPerPage = request.size || 10;
     const currentPage = Number(request.page) || 1;
     const skip = resPerPage * (currentPage - 1);
@@ -38,8 +38,7 @@ export class UsersService {
         }
       : {};
 
-    return this.userRepo.findAll(keyword, resPerPage, skip, {}).populate('roleId', 'name');
-
+    return this.userRepo.findAll(keyword, resPerPage, skip, { populate: ['roleId', 'name'] });
   }
 
   async findOne(id: string) {
