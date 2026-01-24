@@ -89,7 +89,7 @@ export class CampaignsService {
 
   async getListVoteByCampaignId(campaignId: string, req: any): Promise<Vote[]> {
     const checkCampaigns = await this.campaignModel.findOne({_id: new Types.ObjectId(campaignId)}).exec();
-    if (checkCampaigns?.publicResult) {
+    if (!checkCampaigns?.publicResult) {
       return [];
     }
     return await this.voteModel
