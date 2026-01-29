@@ -38,7 +38,10 @@ export class UsersService {
         }
       : {};
 
-    return this.userRepo.findAll(keyword, resPerPage, skip, { populate: ['roleId', 'name'] });
+    return this.userRepo.findAll(keyword, resPerPage, skip, { populate: {
+        path: 'roleId',
+        select: 'name',
+      } });
   }
 
   async findOne(id: string) {

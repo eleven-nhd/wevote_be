@@ -49,7 +49,10 @@ export class VotesService {
 
     return this.voteRepo.findAll({...keyword, ...campaignId, ...listTag}, resPerPage, skip, {
       userId: req.userId || null,
-      populate: ['campaignId', 'name']
+      populate: {
+          path: 'campaignId',
+          select: 'name',
+      }
     });
   }
 

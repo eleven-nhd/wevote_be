@@ -50,7 +50,7 @@ export class BaseAuditRepository<T extends AuditSchema> {
     );
   }
 
-  async findAll(filter: any = {}, resPerPage: number = 10, skip: number = 0, options?: { userId?: string; populate?: string | string[] }) {
+  async findAll(filter: any = {}, resPerPage: number = 10, skip: number = 0, options?: { userId?: string; populate?: any }) {
     const userId = this.getUserId(options);
     const populate = options?.populate;
     const queryFilter: any = {
