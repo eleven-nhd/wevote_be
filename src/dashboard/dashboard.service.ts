@@ -104,6 +104,12 @@ export class DashboardService {
           transactionStats: 0,
         },
       },
+      {
+        $sort: { totalChoose: -1 },
+      },
+      {
+        $limit: 5,
+      },
     ];
 
     return this.voteModel.aggregate(pipeline);
